@@ -1,59 +1,80 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
 import { View, StyleSheet, Text, ScrollView, Image } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import api from '../services/api';
+
+import Shimmer from '../components/shimmer';
+import Check from '../components/check';
+
+
+interface product {
+    id: number,
+    name: string,
+    type: string,
+    value: number,
+    url: string,
+    description: string,
+    promotion: boolean,
+}
 
 export default function Water() {
+    const [water, setWater] = useState<product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [checkVisible, setCheckVisible] = useState(true);
+
     const navigation = useNavigation();
+
+    useEffect(()=>{
+        api.get('product?type=water').then(response=>[
+            setWater(response.data),
+        ]);
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 1000);
+    },[])
 
     function DetailsNavigation() {
         navigation.navigate('Details');
     }
 
+    if(Water.length > 0){
+        setCheckVisible(false);
+    }
+
     return (
         <View style={styles.container}>
-
+            <Shimmer visible={loading}>
+            <Check title="água" visible={checkVisible}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.ViewTitle}>
-                    <Text style={styles.title}>Água</Text>
-                </View>
+                <View style={{marginTop: 20}} />
+                {water.map(Water =>{
+                            return(
+                                <View
+                                key={Water.id}
+                                >
+                                <View style={styles.viewScroll}>
+                                <BorderlessButton onPress={DetailsNavigation}>
+                                <View style={styles.viewCard}>
 
-                <ScrollView showsVerticalScrollIndicator={false}>
+                                    <View style={styles.ViewTextScroll}>
+                                        <Text style={styles.TextTitle}>{Water.name}</Text>
+                                        <Text style={styles.TextValue}>{Water.description}</Text>
+                                        <Text style={styles.TextValue}>R$ {Water.value}0 Unid</Text>
+                                    </View>
+                                    <Image style={styles.image} source={{ uri: Water.url }} />
 
-                    <View style={styles.viewScroll}>
-                        <BorderlessButton onPress={DetailsNavigation}>
-                            <View style={styles.viewCard}>
-
-                                <View style={styles.ViewTextScroll}>
-                                    <Text style={styles.TextTitle}>Rocha Branca</Text>
-                                    <Text style={styles.TextValue}>Galão 20L</Text>
-                                    <Text style={styles.TextValue}>R$ 12.00 Unid</Text>
                                 </View>
-
-                                <Image style={styles.image} source={{ uri: 'https://aguarochabranca.com.br/wp-content/uploads/2018/04/10-litros.png' }} />
-
-                            </View>
-                        </BorderlessButton>
-                    </View>
-
-                    <View style={styles.viewScroll}>
-                        <BorderlessButton onPress={DetailsNavigation}>
-                            <View style={styles.viewCard}>
-
-                                <View style={styles.ViewTextScroll}>
-                                    <Text style={styles.TextTitle}>Rocha Branca</Text>
-                                    <Text style={styles.TextValue}>Galão 10L</Text>
-                                    <Text style={styles.TextValue}>R$ 5.00 Unid</Text>
+                                </BorderlessButton>
                                 </View>
-
-                                <Image style={styles.image} source={{ uri: 'https://aguarochabranca.com.br/wp-content/uploads/2018/04/10-litros.png' }} />
-
-                            </View>
-                        </BorderlessButton>
-                    </View>
-
-                </ScrollView>
+                                </ View>
+                            )
+                        })
+                    }
             </ScrollView>
+            </Check>
+            </Shimmer>
         </View>
     )
 }
@@ -63,15 +84,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center'
     },
-
-    title: {
-        color: '#666666',
-        fontSize: 24,
-        fontFamily: 'Nunito_700Bold',
-        borderBottomColor: '#8fa7b3',
-        marginTop: 20,
-        marginLeft: 20,
-    },
     image: {
         width: 130,
         height: 130,
@@ -80,12 +92,14 @@ const styles = StyleSheet.create({
     },
     viewScroll: {
         padding: 15,
-        backgroundColor: '#333',
+        backgroundColor: '#fff',
         margin: 15,
         marginBottom: 10,
         marginTop: 0,
         borderRadius: 15,
-        elevation: 5
+        elevation: 1,
+        borderWidth: 1.2,
+        borderColor: '#3333',
     },
 
     viewCard: {
@@ -101,7 +115,7 @@ const styles = StyleSheet.create({
     TextTitle: {
         fontFamily: 'Nunito_800ExtraBold',
         paddingHorizontal: 10,
-        color: '#BABABA',
+        color: '#303A52',
 
         fontSize: 25
     },
@@ -109,7 +123,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Nunito_700Bold',
         paddingHorizontal: 10,
         fontSize: 20,
-        color: '#A4A4A4'
+        color: '#303A52'
     },
     ViewTitle: {
         width: '93%',

@@ -1,117 +1,134 @@
-import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { View, StyleSheet, Text, ScrollView, Image, Dimensions } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import React, { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
+import { BorderlessButton } from "react-native-gesture-handler";
+import api from "../services/api";
+
+import Shimmer from '../components/shimmer';
+import Check from '../components/check';
+
+interface productPromo {
+  id: number;
+  name: string;
+  type: string;
+  value: number;
+  url: string;
+  description: string;
+  promotion: boolean;
+}
 
 export default function Promo() {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+  const [promo, setPromo] = useState<productPromo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [checkVisible, setCheckVisible] = useState(true);
 
-    function DetailsNavigation() {
-        navigation.navigate('Details');
-    }
+  useEffect(() => {
+    api.get("productPromo?promotion=true").then((response) => {
+      setPromo(response.data);
+    });
 
-    return (
-        <View style={styles.container}>
+    setTimeout(() => {
+        setLoading(false);
+    }, 1000);
 
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.ViewTitle}>
-                    <Text style={styles.title}>Promoções</Text>
+  }, []);
+
+  function DetailsNavigation() {
+    navigation.navigate("Details");
+  }
+
+  if(promo.length > 0){
+      setCheckVisible(false);
+  }
+
+  return (
+    <View style={styles.container}>
+    <Shimmer visible={loading}>
+    <Check title="promoção" visible={checkVisible}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {promo.map((product) => {
+          return (
+            <View key={product.id} style={styles.viewScroll}>
+              <BorderlessButton onPress={DetailsNavigation}>
+                <View style={styles.viewCard}>
+                  <View style={styles.ViewTextScroll}>
+                    <Text style={styles.TextTitle}>{product.name}</Text>
+                    <Text style={styles.TextValue}>{product.description}</Text>
+                    <Text style={styles.TextValue}>
+                      R$ {product.value}0 Unid
+                    </Text>
+                  </View>
+                  <Image style={styles.image} source={{ uri: product.url }} />
                 </View>
-
-                <ScrollView showsVerticalScrollIndicator={false}>
-
-                <View style={styles.viewScroll}>
-                        <BorderlessButton onPress={DetailsNavigation}>
-                            <View style={styles.viewCard}>
-
-                                <View style={styles.ViewTextScroll}>
-                                    <Text style={styles.TextTitle}>Brahma</Text>
-                                    <Text style={styles.TextValue}>Lata</Text>
-                                    <Text style={styles.TextValue}>R$ 2.50 Unid</Text>
-                                </View>
-                                <Image style={styles.image} source={{ uri: 'https://ogimg.infoglobo.com.br/in/14334450-423-927/FT1086A/652/brahma.jpg' }} />
-
-                            </View>
-                        </BorderlessButton>
-                    </View>
-
-                    <View style={styles.viewScroll}>
-                        <BorderlessButton onPress={DetailsNavigation}>
-                            <View style={styles.viewCard}>
-
-                                <View style={styles.ViewTextScroll}>
-                                    <Text style={styles.TextTitle}>Skol Beat</Text>
-                                    <Text style={styles.TextValue}>Lata</Text>
-                                    <Text style={styles.TextValue}>R$ 6.00 Unid</Text>
-                                </View>
-                                <Image style={styles.image} source={{ uri: 'https://opiniaobomvaleapena.com.br/imagens/cerveja-skol-beats-senses-69ml-caixa-com-8-unidades.png' }} />
-
-                            </View>
-                        </BorderlessButton>
-                    </View>
-
-                </ScrollView>
-            </ScrollView>
-        </View>
-    )
+              </BorderlessButton>
+            </View>
+          );
+        })}
+      </ScrollView>
+      </Check>
+      </Shimmer>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center'
-    },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  title: {
+    color: "#303A52",
+    fontSize: 24,
+    fontFamily: "Nunito_700Bold",
+    borderBottomColor: "#8fa7b3",
+    marginTop: 5,
+    marginBottom: 3,
+    marginLeft: 30,
+  },
+  image: {
+    width: 130,
+    height: 130,
+    resizeMode: "cover",
+    borderRadius: 20,
+  },
+  viewScroll: {
+    padding: 15,
+    backgroundColor: "#fff",
+    margin: 15,
+    marginBottom: 10,
+    marginTop: 0,
+    borderRadius: 15,
+    elevation: 1,
+    borderWidth: 1.2,
+    borderColor: "#3333",
+  },
 
-    title: {
-        color: '#666666',
-        fontSize: 24,
-        fontFamily: 'Nunito_700Bold',
-        borderBottomColor: '#8fa7b3',
-        marginTop: 20,
-        marginLeft: 20,
-    },
-    image: {
-        width: 130,
-        height: 130,
-        resizeMode: 'cover',
-        borderRadius: 20
-    },
-    viewScroll: {
-        padding: 15,
-        backgroundColor: '#333',
-        margin: 15,
-        marginBottom: 10,
-        marginTop: 0,
-        borderRadius: 15,
-        elevation: 5
-    },
+  viewCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
 
-    viewCard: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-
-    ViewTextScroll: {
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: 8,
-    },
-    TextTitle: {
-        fontFamily: 'Nunito_800ExtraBold',
-        paddingHorizontal: 10,
-        color: '#BABABA',
-
-        fontSize: 25
-    },
-    TextValue: {
-        fontFamily: 'Nunito_700Bold',
-        paddingHorizontal: 10,
-        fontSize: 20,
-        color: '#A4A4A4'
-    },
-    ViewTitle: {
-        width: '93%',
-        alignItems: 'flex-end',
-        marginBottom: 5
-    }
-})
+  ViewTextScroll: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    padding: 8,
+  },
+  TextTitle: {
+    fontFamily: "Nunito_800ExtraBold",
+    paddingHorizontal: 10,
+    color: "#323232",
+    fontSize: 25,
+  },
+  TextValue: {
+    fontFamily: "Nunito_700Bold",
+    paddingHorizontal: 10,
+    fontSize: 20,
+    color: "#323232",
+  },
+  ViewTitle: {
+    width: "93%",
+    alignItems: "flex-end",
+    marginBottom: 5,
+  },
+});

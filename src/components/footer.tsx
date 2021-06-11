@@ -4,10 +4,7 @@ import { RectButton } from 'react-native-gesture-handler';
 
 import { useNavigation } from '@react-navigation/native';
 
-
-import { FontAwesome } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -18,6 +15,7 @@ export default function Footer() {
 
     const navigation = useNavigation()
 
+    
 
     function navigateDrinks() {
         navigation.navigate('Drinks')
@@ -40,104 +38,92 @@ export default function Footer() {
     }
 
     function navigateMenu() {
-        navigation.navigate('Menu');
-        setStatusTela('Menu')
+        navigation.navigate('Request');
+        setStatusTela('Request')
     }
 
     return (
         <View style={styles.container}>
 
             {statusTela == 'Promo' ? (
-                <RectButton onPress={navigatePromo} style={[styles.botton, { backgroundColor: '#862A2A', marginBottom: 35, height: 50, elevation: 10 }]}>
-                    <Ionicons name="megaphone" size={24} color="#333" />
+                <RectButton onPress={navigatePromo} style={styles.botton}>
+                    <MaterialCommunityIcons name="food-fork-drink" size={26} color="#303A52" />
                 </RectButton>
             ) : (
 
                     <RectButton onPress={navigatePromo} style={styles.botton}>
-                        <Ionicons name="megaphone" size={24} color="#FFF" />
+                        <MaterialCommunityIcons name="food-fork-drink" size={26} color="#fff" />
                     </RectButton>
 
                 )}
 
             {statusTela == 'Drinks' ? (
-                <RectButton onPress={navigateDrinks} style={[styles.botton, { backgroundColor: '#862A2A', marginBottom: 35, height: 50, elevation: 10 }]}>
-                    <FontAwesome name="beer" size={24} color="#333" />
+                <RectButton onPress={navigateDrinks} style={styles.botton}>
+                    <Entypo name="cup" size={26} color="#303A52" />
                 </RectButton>
             ) : (
 
                     <RectButton onPress={navigateDrinks} style={styles.botton}>
-                        <FontAwesome name="beer" size={24} color="#FFF" />
+                        <Entypo name="cup" size={26} color="#fff" />
                     </RectButton>
 
                 )}
 
             {statusTela == 'Gas' ? (
-                <RectButton onPress={navigateDrinks} style={[styles.botton, { backgroundColor: '#862A2A', marginBottom: 35, height: 50, elevation: 10 }]}>
-                    <MaterialCommunityIcons name="gas-cylinder" size={24} color="#333" />
+                <RectButton onPress={navigateDrinks} style={styles.botton}>
+                    <MaterialCommunityIcons name="gas-cylinder" size={26} color="#303A52" />
                 </RectButton>
             ) : (
 
                     <RectButton onPress={navigateGas} style={styles.botton}>
-                        <MaterialCommunityIcons name="gas-cylinder" size={24} color="#FFF" />
+                        <MaterialCommunityIcons name="gas-cylinder" size={26} color="#FFF" />
                     </RectButton>
 
                 )}
 
             {statusTela == 'Water' ? (
-                <RectButton onPress={navigateWater} style={[styles.botton, { backgroundColor: '#862A2A', marginBottom: 35, height: 50, elevation: 10 }]}>
-                    <Entypo name="water" size={24} color="#333" />
+                <RectButton onPress={navigateWater} style={styles.botton}>
+                    <MaterialCommunityIcons name="bottle-soda-classic" size={24} color="#303A52" />
                 </RectButton>
             ) : (
                     <RectButton onPress={navigateWater} style={styles.botton}>
-                        <Entypo name="water" size={24} color="#FFF" />
+                        <MaterialCommunityIcons name="bottle-soda-classic" size={26} color="#fff" />
+                        
                     </RectButton>
 
                 )}
 
-            {statusTela == 'Menu' ? (
-                <RectButton onPress={navigateMenu} style={[styles.botton, { backgroundColor: '#862A2A', marginBottom: 35, height: 50, elevation: 10 }]}>
-                     <MaterialIcons name="menu" size={24} color="#333" />
+            {statusTela == 'Request' ? (
+                <RectButton onPress={navigateMenu} style={styles.botton}>
+                     <MaterialIcons name="menu" size={26} color="#303A52" />
                 </RectButton>
             ) : (
                 <RectButton onPress={navigateMenu} style={styles.botton}>
-                <MaterialIcons name="menu" size={24} color="#FFF" />
+                <MaterialIcons name="menu" size={26} color="#FFF" />
                 </RectButton>
 
                 )}
-
-
-
-
-        
-
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        height: 70,
+        height: 60,
+        marginRight:0,
         flexDirection: 'row',
         backgroundColor: '#D13438',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
         paddingHorizontal: 20,
+        elevation: 2,
     },
     botton: {
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
-        padding: 10,
         marginHorizontal: 5,
-        backgroundColor: '#AA3535',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 2,
-            height: 2,
-        },
-        shadowRadius: 3.84,
-        elevation: 5,
         marginBottom: 10
     }
 })

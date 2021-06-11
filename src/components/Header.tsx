@@ -1,18 +1,27 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { Feather } from '@expo/vector-icons'
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
+import { Delete } from '../utils/database';
 
 interface headerProps {
     title: string,
     showCancell?: boolean,
     showgobak?: boolean
+    deslog?: boolean
 }
 
-export default function Header({ title, showCancell = false, showgobak = false }: headerProps){
+export default function Header({ title, showCancell = false, showgobak = false, deslog = false }: headerProps){
 
     const navigation = useNavigation();
+
+    async function deslogar(){
+        await Delete('@users');
+        navigation.navigate('Home');
+    }
+
 
     function CancellCadastro(){
         navigation.navigate('Home')
@@ -33,8 +42,14 @@ export default function Header({ title, showCancell = false, showgobak = false }
                 <BorderlessButton onPress={CancellCadastro}>
                 <Feather name="x" size={24} color="#F2B1B1"/>
             </BorderlessButton>
-            ) : (
+            ) : ( 
+                deslog ? (
+                    <BorderlessButton onPress={deslogar}>
+                        <AntDesign name="logout" size={24} color="#FFF" />
+                    </BorderlessButton>
+                ):(
                 <View />
+                )
             )}
         </View>
     )

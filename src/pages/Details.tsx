@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   View,
@@ -12,44 +12,86 @@ import {
 
 import { RectButton } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker'
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+
+import api from '../services/api';
+
+interface useRouteParams {
+  id: number;
+}
+
+interface products {
+  name: string,
+  value: number,
+  url: string,
+  description: string,
+}
 
 export default function Details() {
-
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [entrega, setEntrega] = useState('Delivery');
-  const [tipoPay, setTipopay] = useState('Dinheiro');
-  const [bandeira, setBandeira] = useState('nenhuma');
-  const [quantidade, setQuantidade] = useState(1);
+  const [product, setProduct] = useState<products>();
 
-  if (entrega == 'Drive Thru') {
-    var valor = 0.00
-  } else {
-    var valor = 5.00
-  }
+
+  const nameUser = "Diego";
+  const cpfUser = 19713767799;
+  const idUser = 1;
+
+  const nameProduct = product?.name;
+  const value = product?.value;
+  const [quantidade, setQuantidade] = useState(1);
+  const [entrega, setEntrega] = useState('Delivery');
+  const [valorEntrega, setValueEntrega] = useState(5);
+  const [formaPag, setTipopay] = useState('Cartão');
+  const [bandeira, setBandeira] = useState('Visa');
+  const [valorCliente, setValueClient] = useState(0);
+  let valorTotal = (Number(product?.value) * quantidade) + valorEntrega;
+  let troco = valorCliente == 0 ? 0 : (valorCliente - valorTotal);
+
+  const route = useRoute();
+  const params = route.params as useRouteParams;
 
   const navigation = useNavigation();
 
-  function button(){
-    if(entrega === 'Delivery'){
-      setModalVisible(!modalVisible)
-    } else {
-      setModalVisible(!modalVisible)
-    }
+  useEffect(()=>{
+    setValueClient(0);
+    troco = 0;
+  }, [formaPag]);
+
+  useEffect(()=>{
+    api.get(`product/${params.id}`).then(response =>{
+        setProduct(response.data);
+    })
+  },[params.id]);
+
+  async function createRequest(){
+    await api.post('/request',{
+      nameUser,
+      cpfUser,
+      idUser,
+      nameProduct,
+      value,
+      quantidade,
+      entrega,
+      valorEntrega,
+      valorTotal,
+      formaPag,
+      bandeira,
+      valorCliente,
+      troco,
+    })
+
+    setModalVisible(!modalVisible);
+
   }
 
-  function navigationHome() {
-    setModalVisible(!modalVisible)
-  }
-
-  function navigationMaps() {
-    setModalVisible(!modalVisible)
-    navigation.navigate('Maps')
+  function navigateModal(){
+    setModalVisible(false);
+    entrega == 'Delivery' ? navigation.goBack() : navigation.navigate('Maps');
   }
 
   function SetSomaQuatidadeItens() {
@@ -60,6 +102,11 @@ export default function Details() {
     quantidade > 1 ? setQuantidade(quantidade - 1) : null
   }
 
+  function FormEntrega(text: string){
+      setEntrega(text);
+      text == 'Delivery' ? setValueEntrega(5) : setValueEntrega(0);
+  }
+
   return (
 
     <View style={styles.container}>
@@ -67,49 +114,26 @@ export default function Details() {
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <Modal
-          animationType="slide"
+          animationType='slide'
           transparent
           visible={modalVisible}
         >
-          {entrega == 'Drive Thru' ? (
-            <View style={styles.container}>
-              <View style={styles.modalView}>
-                <Text style={styles.textModal}>Obrigado pela compra!</Text>
-                <Text style={styles.textMesageModal}>Vamos ir buscar o pedido ?</Text>
-                <View style={styles.MenuModalItens}>
-                  <Text style={[styles.TextScroll, {color: '#333'}]}>Dados da compra</Text>
-
-                  <Text style={styles.textModalItens}>Entrega: Drive Thru</Text>
-                  <Text style={styles.textModalItens}>Quantidade: 10 </Text>
-                  <Text style={styles.textModalItens}>Valor: R$ 75.90 </Text>
-                  <Text style={styles.textModalItens}>Forma de pagamento: Cartão </Text>
-
-                </View>
-                <TouchableHighlight onPress={navigationMaps} style={[styles.bottonModal, { backgroundColor: '#00CC6A' }]}>
-                  <MaterialCommunityIcons name="google-maps" size={24} color="#FFF" />
-                </TouchableHighlight>
-              </View>
-            </View>
-          ) : (
+            <View style={styles.viewExternaModal}>
               <View style={styles.containerModal}>
                 <View style={styles.modalView}>
-                  <Text style={styles.textModal}>Obrigado pela compra!</Text>
-                  <View style={styles.MenuModalItens}>
-                    <Text style={[styles.TextScroll, {color: '#333'}]}>Dados da compra</Text>
-
-                    <Text style={styles.textModalItens}>Entrega: Drive Thru</Text>
-                    <Text style={styles.textModalItens}>Quantidade: 10 </Text>
-                    <Text style={styles.textModalItens}>Valor: R$ 75.90 </Text>
-                    <Text style={styles.textModalItens}>Forma de pagamento: Cartão </Text>
-
-                  </View>
-
-                  <TouchableHighlight onPress={navigationHome} style={styles.bottonModal}>
-                    <Entypo name="home" size={24} color="#FFF" />
+                  <MaterialIcons name="fact-check" size={24} color="#333" />
+                  <Text style={styles.textModal}>Pedido efetuado com sucesso!!</Text>
+                  
+                    <Text style={styles.textModalSub}>
+                      Agradecemos a preferência e te esperamos de volta! ok?
+                    </Text>
+        
+                  <TouchableHighlight onPress={navigateModal} style={styles.bottonModal}>
+                    <Entypo name="check" size={24} color="#FFF" />
                   </TouchableHighlight>
                 </View>
               </View>
-            )}
+            </View>
         </Modal>
 
         <View style={styles.ImageView}>
@@ -117,46 +141,39 @@ export default function Details() {
             justifyContent: 'space-between',
             height: 80
           }}>
-            <Text style={styles.TextScroll}>Brahma</Text>
-            <Text style={styles.TextScroll}>R$ 2.50</Text>
+            <Text style={styles.TextScroll}>{product?.name}</Text>
+            <Text style={styles.TextScroll}>R$ {product?.value}0</Text>
           </View>
 
-          <Image style={styles.image} source={{ uri: 'https://ogimg.infoglobo.com.br/in/14334450-423-927/FT1086A/652/brahma.jpg' }} />
+          <Image style={styles.image} source={{ uri: product?.url }} />
         </View>
 
         <View style={styles.viewQtd}>
-          <Text style={styles.label}>Quantidade:</Text>
-          <AntDesign onPress={SetSubtraiQuatidadeItens} name="minus" size={24} color="#BABABA" />
+          <AntDesign onPress={SetSubtraiQuatidadeItens} name="minus" size={32} color="#D13438" />
           <TextInput
             keyboardType="numeric"
             style={styles.inputQuantidade}
             value={String(quantidade)}
-            editable={false}
+            onChangeText={text => setQuantidade(Number(text))}
           />
-          <AntDesign onPress={SetSomaQuatidadeItens} name="plus" size={24} color="#BABABA" />
+          <AntDesign onPress={SetSomaQuatidadeItens} name="plus" size={32} color="#2BD65B" />
         </View>
 
         <View style={styles.EntregaView}>
           <View style={styles.ViewTextScroll}>
-            <Text style={styles.TextScroll}>Entrega:</Text>
-            <Text style={styles.TextScrollValue}>R$ {valor}.00</Text>
-          </View>
-
-          <View style={styles.ViewTextScroll}>
             <Text style={styles.TextScroll}>Valor total:</Text>
-            <Text style={styles.TextScrollValue}>R$ {75.50 + valor}</Text>
+            <Text style={styles.TextScrollValue}>R$ {valorTotal}</Text>
           </View>
         </View>
 
         <View style={styles.ViewInput}>
           <Text style={styles.label}>Entrega</Text>
-
           <Picker
             selectedValue={entrega}
             style={{  color: '#BABABA',}}
-            mode='dialog'
+            mode='dropdown'
             accessibilityViewIsModal
-            onValueChange={(itemValor, itemIndex) => { setEntrega(String(itemValor)) }}
+            onValueChange={text => FormEntrega(String(text))}
           >
             <Picker.Item label="Delivery" value="Delivery" />
             <Picker.Item label="Drive Thru" value="Drive Thru" />
@@ -164,44 +181,43 @@ export default function Details() {
         </View>
 
 
-        <View style={styles.ViewInput}>
+        <View style={formaPag == 'Dinheiro' ? [styles.ViewInput, {borderBottomRightRadius: 20, borderBottomLeftRadius: 20}] : styles.ViewInput}>
           <Text style={styles.label}>Forma de pagamento</Text>
 
           <Picker
-            selectedValue={tipoPay}
-            mode='dialog'
+            selectedValue={formaPag}
+            mode='dropdown'
             style={{  color: '#BABABA',}}
             accessibilityViewIsModal
-            onValueChange={(itemValor, itemIndex) => { setTipopay(String(itemValor)) }}
+            onValueChange={text => setTipopay(String(text))}
           >
             <Picker.Item label="Dinheiro" value="Dinheiro" />
             <Picker.Item label="Cartão" value="Cartão" />
           </Picker>
         </View>
 
-
-
-        {tipoPay == 'Dinheiro' ? (
+        {formaPag == 'Dinheiro' ? (
           <View style={styles.viewOptionsCartDin}>
             <Text style={[styles.label, { color: '#333'}]}>Valor de pagameto</Text>
             <TextInput
               keyboardType="numeric"
               style={styles.input}
               placeholder='Ex: 100'
+              onChangeText={text => setValueClient(Number(text))}
             />
-            <Text style={[styles.label, { color: '#333'}]}>Troco: R${100 - 80.50 + valor}</Text>
+            <Text style={[styles.label, { color: '#333'}]}>Troco:  R$ {troco} </Text>
           </View>
 
         ) : (
-            <View style={styles.ViewInput}>
+            <View style={[styles.ViewInput, {borderBottomRightRadius: 20, borderBottomLeftRadius: 20}]}>
               <Text style={styles.label}>Qual baneira ?</Text>
 
               <Picker
                 selectedValue={bandeira}
-                mode='dialog'
+                mode='dropdown'
                 style={{  color: '#BABABA',}}
                 accessibilityViewIsModal
-                onValueChange={(itemValor, itemIndex) => { setBandeira(String(itemValor)) }}
+                onValueChange={text => setBandeira(String(text))}
               >
                 <Picker.Item label="Visa" value="Visa" />
                 <Picker.Item label="Mastercard" value="Mastercard" />
@@ -214,32 +230,15 @@ export default function Details() {
                 <Picker.Item label="Google Pay" value="Google Pay" />
                 <Picker.Item label="Apple Pay" value="Apple Pay" />
                 <Picker.Item label="Qr code Pay" value="Qr code Pay" />
-                <Picker.Item label="Outra..." value="Outra" />
               </Picker>
-              {bandeira == "Outra" ? (
-                <View style={styles.viewOptionsCartDin}>
-
-                  <TextInput
-                    style={styles.input}
-                    placeholder='digite aqui...'
-                  />
-                </View>
-              ) : (null)
-              }
             </View>
           )}
 
-
         <View style={styles.ViewBotton}>
-
-
-         
-            <RectButton onPress={button} style={styles.botton}>
+            <RectButton onPress={createRequest} style={styles.botton}>
               <Text style={styles.textBotton}>Comprar</Text>
             </RectButton>
-         
         </View>
-
       </ScrollView>
     </View>
   )
@@ -248,7 +247,6 @@ export default function Details() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    
   },
   title: {
     fontSize: 24,
@@ -256,7 +254,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#8fa7b3',
     marginTop: 10,
     marginBottom: 10,
-    color: '#BABABA'
+    color: '#333'
   },
   image: {
     width: 150,
@@ -273,33 +271,33 @@ const styles = StyleSheet.create({
     padding: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    color: '#BABABA',
+    color: '#333',
 
   },
   TextScroll: {
-    fontFamily: 'Nunito_800ExtraBold',
-    fontSize: 22,
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 18,
     marginLeft: 10,
-    color: '#BABABA',
+    color: '#333',
   },
   label: {
-    fontFamily: 'Nunito_800ExtraBold',
+    fontFamily: 'Nunito_700Bold',
     marginBottom: 8,
-    fontSize: 20,
-    color: '#BABABA',
+    fontSize: 18,
+    color: '#333',
   },
 
   input: {
     backgroundColor: '#fff',
     borderWidth: 1.4,
-    borderColor: '#d3e2e6',
-    borderRadius: 20,
+    borderColor: '#3333',
+    borderRadius: 15,
     height: 56,
     paddingVertical: 18,
     paddingHorizontal: 24,
     textAlignVertical: 'top',
     marginBottom: 20,
-    color: '#BABABA',
+    color: '#333',
   },
   botton: {
     width: 290,
@@ -310,18 +308,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: '#D13438',
     borderWidth: 2,
-    elevation: 8,
+    elevation: 1,
     marginTop: 20
   },
 
   ViewInput: {
     padding: 20,
-    backgroundColor: '#333',
-    borderRadius: 20,
-    marginLeft: 8,
-    marginRight: 8,
-    marginTop: 10,
-    elevation: 2,
+    backgroundColor: '#fff',
+    marginHorizontal: 10,
+    elevation: 1,
+    borderLeftWidth: 1.2,
+    borderRightWidth: 1.2,
+    borderColor: '#3333',
   },
   ImageView: {
     flexDirection: 'row',
@@ -330,11 +328,15 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginLeft: 10,
     marginTop: 20,
-    backgroundColor: '#333',
+    backgroundColor: '#fff',
     paddingVertical: 10,
     padding: 10,
-    borderRadius: 15,
-    elevation: 8,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    elevation: 1,
+    borderWidth: 1.2,
+    borderBottomWidth: 0,
+    borderColor: '#3333',
 
   },
   ViewBotton: {
@@ -350,40 +352,52 @@ const styles = StyleSheet.create({
   },
   viewQtd: {
     padding: 20,
+    paddingHorizontal: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#333',
-    margin: 10,
-    borderRadius: 15
+    backgroundColor: '#fff',
+    marginHorizontal: 10,
+    elevation: 1,
+    borderLeftWidth: 1.2,
+    borderRightWidth: 1.2,
+    borderColor: '#3333',
   },
   inputQuantidade: {
     backgroundColor: '#fff',
     borderWidth: 1.4,
-    borderColor: '#d3e2e6',
+    borderColor: '#3333',
     borderRadius: 20,
     height: 56,
     paddingVertical: 18,
     paddingHorizontal: 24,
     textAlignVertical: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
+    elevation: 1,
   },
   TextScrollValue: {
     fontFamily: 'Nunito_600SemiBold',
     fontSize: 18,
     marginRight: 20,
-    color: '#BABABA'
+    color: '#333'
   },
   containerModal: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  viewExternaModal:{
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(136, 136, 136, 0.5)',
+    marginTop: 66
+    
+  },
   modalView: {
     margin: 20,
-    width: '85%',
-    height: '95%',
-    backgroundColor: '#F3F3F3',
+    width: '80%',
+    height: '35%',
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
@@ -393,7 +407,7 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 1,
     justifyContent: 'center',
   },
   textModal: {
@@ -401,9 +415,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito_700Bold',
     marginBottom: 30
   },
+  textModalSub:{
+    fontSize: 18,
+    fontFamily: 'Nunito_600SemiBold',
+    marginBottom: 30,
+  },
   bottonModal: {
-    backgroundColor: '#D13438',
-    width: 100,
+    backgroundColor: '#2BD65B',
+    width: 80,
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -414,22 +433,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito_700Bold',
     marginBottom: 30
   },
-  MenuModalItens: {
-    backgroundColor: '#ACACAC',
-    padding: 10,
-    width: '100%',
-    marginBottom: 20,
-    borderRadius: 15
-  },
-  textModalItens: {
-    fontSize: 15,
-    fontFamily: 'Nunito_700Bold',
-    marginTop: 5
-  },
   EntregaView: { 
-    backgroundColor: '#333', 
-    marginHorizontal: 10, 
-    borderRadius: 15
+    backgroundColor: '#fff', 
+    marginHorizontal: 10,
+    elevation: 1,
+    borderLeftWidth: 1.2,
+    borderRightWidth: 1.2,
+    borderColor: '#3333',
   }
-
 })

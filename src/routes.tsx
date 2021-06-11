@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -7,35 +7,22 @@ const { Navigator, Screen } = createStackNavigator();
 
 import Maps from './pages/Maps';
 import Home from './pages/Home';
-import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Details from './pages/Details';
 
 import MainTab from './tabNavigation'
-
 import Header from './components/Header'
-
 
 export default function Router() {
     return (
         <NavigationContainer>
-            <Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: "#f2f3f5" } }}>
+                <Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: "#f2f3f5" } }}>
                 <Screen
                     name="Home"
                     component={Home}
                     options={{
                         headerShown: true,
                         header: () => <Header showgobak={false} title="VIP" />
-                    }}
-                />
-
-
-                <Screen
-                    name="Login"
-                    component={Login}
-                    options={{
-                        headerShown: true,
-                        header: () => <Header showgobak={true} title="VIP" />
                     }}
                 />
                 <Screen
@@ -52,7 +39,7 @@ export default function Router() {
                     component={MainTab}
                     options={{
                         headerShown: true,
-                        header: () => <Header title="VIP" />
+                        header: () => <Header title="VIP" deslog={true} />
                     }}
                 />
 
