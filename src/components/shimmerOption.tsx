@@ -3,30 +3,36 @@ import { View, StyleSheet, Animated } from "react-native";
 
 interface valueShimer {
   visible: boolean;
-  children: {};
+  children: object;
 }
 
 export default function shimmer({ visible = false, children }: valueShimer) {
   const AnimatedValue = new Animated.Value(0);
 
-  const AnimatedAnime = () => {
+  useEffect(() =>{
+    AnimatedAnime();
+
+    return ()=> AnimatedAnime();
+  }, []);
+
+  function AnimatedAnime(){
     AnimatedValue.setValue(0);
     Animated.timing(AnimatedValue, {
       toValue: 1,
-      duration: 750,
+      duration: 550,
       useNativeDriver: false,
     }).start(() => {
       setTimeout(() => {
         AnimatedAnime();
-      }, 50);
+      }, 80);
     });
   };
 
-  AnimatedAnime()
+  AnimatedAnime();
 
   const translateXX = AnimatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: [-50, 130],
+    outputRange: [1, 100],
   });
 
   if (visible) {

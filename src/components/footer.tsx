@@ -5,9 +5,7 @@ import { RectButton } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-
+import { Fontisto } from '@expo/vector-icons'; 
 
 export default function Footer() {
 
@@ -47,59 +45,59 @@ export default function Footer() {
 
             {statusTela == 'Promo' ? (
                 <RectButton onPress={navigatePromo} style={styles.botton}>
-                    <MaterialCommunityIcons name="food-fork-drink" size={26} color="#303A52" />
+                    <Fontisto name="train-ticket" size={22} color="#333" />
                 </RectButton>
             ) : (
 
                     <RectButton onPress={navigatePromo} style={styles.botton}>
-                        <MaterialCommunityIcons name="food-fork-drink" size={26} color="#fff" />
+                        <Fontisto name="train-ticket" size={22} color="#FFF" />
                     </RectButton>
 
                 )}
 
             {statusTela == 'Drinks' ? (
                 <RectButton onPress={navigateDrinks} style={styles.botton}>
-                    <Entypo name="cup" size={26} color="#303A52" />
+                    <Fontisto name="shopping-store" size={20} color="#333" />
                 </RectButton>
             ) : (
 
                     <RectButton onPress={navigateDrinks} style={styles.botton}>
-                        <Entypo name="cup" size={26} color="#fff" />
+                        <Fontisto name="shopping-store" size={20} color="#FFF" />
                     </RectButton>
 
                 )}
 
             {statusTela == 'Gas' ? (
                 <RectButton onPress={navigateDrinks} style={styles.botton}>
-                    <MaterialCommunityIcons name="gas-cylinder" size={26} color="#303A52" />
+                    <Fontisto name="test-bottle" size={22} color="#333" />
                 </RectButton>
             ) : (
 
                     <RectButton onPress={navigateGas} style={styles.botton}>
-                        <MaterialCommunityIcons name="gas-cylinder" size={26} color="#FFF" />
+                       <Fontisto name="test-bottle" size={22} color="#FFF" />
                     </RectButton>
 
                 )}
 
             {statusTela == 'Water' ? (
                 <RectButton onPress={navigateWater} style={styles.botton}>
-                    <MaterialCommunityIcons name="bottle-soda-classic" size={24} color="#303A52" />
+                    
+                    <MaterialCommunityIcons name="bottle-tonic-outline" size={24} color="#333" />
                 </RectButton>
             ) : (
                     <RectButton onPress={navigateWater} style={styles.botton}>
-                        <MaterialCommunityIcons name="bottle-soda-classic" size={26} color="#fff" />
-                        
+                        <MaterialCommunityIcons name="bottle-tonic-outline" size={24} color="#fff" />
                     </RectButton>
 
                 )}
 
             {statusTela == 'Request' ? (
                 <RectButton onPress={navigateMenu} style={styles.botton}>
-                     <MaterialIcons name="menu" size={26} color="#303A52" />
+                    <MaterialCommunityIcons name="clipboard-text" size={24} color="#333" />
                 </RectButton>
             ) : (
                 <RectButton onPress={navigateMenu} style={styles.botton}>
-                <MaterialIcons name="menu" size={26} color="#FFF" />
+                     <MaterialCommunityIcons name="clipboard-text" size={24} color="#FFF" />
                 </RectButton>
 
                 )}

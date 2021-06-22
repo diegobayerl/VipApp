@@ -20,7 +20,6 @@ interface product {
 export default function Gas() {
     const [gas, setGas] = useState<product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [checkVisible, setCheckVisible] = useState(true);
 
     const navigation = useNavigation();
 
@@ -28,24 +27,17 @@ export default function Gas() {
         api.get('product?type=gas').then(response =>{
             setGas(response.data);
         });
-
-        setTimeout(() => {
             setLoading(false);
-        }, 1000);
     },[]);
 
-    function DetailsNavigation() {
-        navigation.navigate('Details');
-    }
-
-    if(gas.length > 0){
-        setCheckVisible(false);
+    function DetailsNavigation(id: number) {
+        navigation.navigate('Details', {id});
     }
 
     return (
         <View style={styles.container}>
             <Shimmer visible={loading}>
-            <Check title="gás" visible={checkVisible}>
+            <Check title="gás" visible={gas.length < 1}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{marginTop: 20}} />
                 {gas.map(Gas =>{
@@ -54,13 +46,13 @@ export default function Gas() {
                                 key={Gas.id}
                                 >
                                 <View style={styles.viewScroll}>
-                                <BorderlessButton onPress={DetailsNavigation}>
+                                <BorderlessButton onPress={()=> DetailsNavigation(Gas.id)}>
                                 <View style={styles.viewCard}>
 
                                     <View style={styles.ViewTextScroll}>
                                         <Text style={styles.TextTitle}>{Gas.name}</Text>
                                         <Text style={styles.TextValue}>{Gas.description}</Text>
-                                        <Text style={styles.TextValue}>R$ {Gas.value}0 Unid</Text>
+                                        <Text style={styles.TextValue}>R$ {Gas.value.toFixed(2)} Unid</Text>
                                     </View>
                                     <Image style={styles.image} source={{ uri: Gas.url }} />
 
@@ -115,13 +107,18 @@ const styles = StyleSheet.create({
         fontFamily: 'Nunito_800ExtraBold',
         paddingHorizontal: 10,
         color: '#303A52',
-        fontSize: 25
+        fontSize: 25,
+
+        width: 150,
+        marginBottom: 5
     },
     TextValue: {
         fontFamily: 'Nunito_700Bold',
         paddingHorizontal: 10,
         fontSize: 20,
-        color: '#303A52'
+        color: '#303A52',
+
+        width: 165
     },
     ViewTitle: {
         width: '93%',

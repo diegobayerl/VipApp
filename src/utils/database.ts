@@ -15,7 +15,7 @@ interface dataSave {
 
 export async function Get(key: string){
     const data = await AsyncStorage.getItem(key) as string;
-    let response = JSON.parse(data) || false;
+    let response = JSON.parse(data) || null;
     return response;
 };
 

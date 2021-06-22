@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { View, StyleSheet, Text, ScrollView, Dimensions, MaskedViewComponent } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import api from "../services/api";
+
+import AuthContext from '../constexts/auth';
 
 import Shimmer from '../components/shimmerOption';
 
@@ -24,29 +26,26 @@ interface requests {
   valorCliente: number;
   troco: number;
   hora: string;
+  date: string;
   status: boolean;
 }
 
 export default function Request() {
 
-  const idUser = 1;
+  const isFocused = useIsFocused();
+
+  const { user } = useContext(AuthContext);
 
   const [requests, setRequests] = useState<requests[]>([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
-    api.get(`requests/${idUser}`).then((response) => {
-      setRequests(response.data);
-
-      setTimeout(() => {
+    api.get(`requests/${user?.id}`).then((response) => {
+      setRequests(response.data.reverse());
         setLoading(false);
-    }, 1000);
     });
-
-  }, []);
-
-  requests.reverse();
+  }, [isFocused]);
 
   function NavigateMaps() {
     navigation.navigate("Maps");
@@ -127,9 +126,14 @@ export default function Request() {
                 <Text style={styles.textItens}>{request.id}</Text>
               </View>
               <View style={styles.viewTitleItens}>
+                <Text style={styles.textItensTitle}>Dia da compra:</Text>
+                <Text style={styles.textItens}>{request.date}</Text>
+              </View>
+              <View style={styles.viewTitleItens}>
                 <Text style={styles.textItensTitle}>Horário da compra:</Text>
                 <Text style={styles.textItens}>{request.hora}</Text>
               </View>
+
 
               <Text style={styles.textItens}>Status:</Text>
 

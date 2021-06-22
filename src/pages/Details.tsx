@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import {
   View,
@@ -8,9 +8,12 @@ import {
   TextInput,
   Modal,
   TouchableHighlight,
+  ActivityIndicator,
+  TouchableOpacity
 } from 'react-native';
 
-import { RectButton } from 'react-native-gesture-handler';
+import AuthContext from '../constexts/auth';
+
 import { Picker } from '@react-native-picker/picker'
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -32,14 +35,13 @@ interface products {
 }
 
 export default function Details() {
-  const [modalVisible, setModalVisible] = useState(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
   const [product, setProduct] = useState<products>();
 
+  const [load, setLoad] = useState(false);
 
-  const nameUser = "Diego";
-  const cpfUser = 19713767799;
-  const idUser = 1;
+  const { user } = useContext(AuthContext);
 
   const nameProduct = product?.name;
   const value = product?.value;
@@ -49,6 +51,7 @@ export default function Details() {
   const [formaPag, setTipopay] = useState('Cartão');
   const [bandeira, setBandeira] = useState('Visa');
   const [valorCliente, setValueClient] = useState(0);
+
   let valorTotal = (Number(product?.value) * quantidade) + valorEntrega;
   let troco = valorCliente == 0 ? 0 : (valorCliente - valorTotal);
 
@@ -69,11 +72,16 @@ export default function Details() {
   },[params.id]);
 
   async function createRequest(){
+
+    setLoad(true);
+
     await api.post('/request',{
-      nameUser,
-      cpfUser,
-      idUser,
+      nameUser: user?.name,
+      cpfUser: user?.cpf,
+      idUser: user?.id,
+      idProduct: params.id,
       nameProduct,
+      description: product?.description,
       value,
       quantidade,
       entrega,
@@ -85,6 +93,7 @@ export default function Details() {
       troco,
     })
 
+    setLoad(false);
     setModalVisible(!modalVisible);
 
   }
@@ -142,7 +151,7 @@ export default function Details() {
             height: 80
           }}>
             <Text style={styles.TextScroll}>{product?.name}</Text>
-            <Text style={styles.TextScroll}>R$ {product?.value}0</Text>
+            <Text style={styles.TextScroll}>R$ {product?.value.toFixed(2)}</Text>
           </View>
 
           <Image style={styles.image} source={{ uri: product?.url }} />
@@ -162,7 +171,7 @@ export default function Details() {
         <View style={styles.EntregaView}>
           <View style={styles.ViewTextScroll}>
             <Text style={styles.TextScroll}>Valor total:</Text>
-            <Text style={styles.TextScrollValue}>R$ {valorTotal}</Text>
+            <Text style={styles.TextScrollValue}>R$ {valorTotal.toFixed(2)}</Text>
           </View>
         </View>
 
@@ -205,7 +214,7 @@ export default function Details() {
               placeholder='Ex: 100'
               onChangeText={text => setValueClient(Number(text))}
             />
-            <Text style={[styles.label, { color: '#333'}]}>Troco:  R$ {troco} </Text>
+            <Text style={[styles.label, { color: '#333'}]}>Troco:  R$ {troco.toFixed(2)} </Text>
           </View>
 
         ) : (
@@ -235,9 +244,13 @@ export default function Details() {
           )}
 
         <View style={styles.ViewBotton}>
-            <RectButton onPress={createRequest} style={styles.botton}>
-              <Text style={styles.textBotton}>Comprar</Text>
-            </RectButton>
+            <TouchableOpacity disabled={load} onPress={createRequest} style={!load ? styles.botton : [styles.botton, {backgroundColor: '#AE696A'}] }>
+              {!load ? (
+                 <Text style={styles.textBotton}>Comprar</Text>
+              ): (
+                <ActivityIndicator size='small' color='#FFF' />
+              )}
+            </TouchableOpacity>
         </View>
       </ScrollView>
     </View>

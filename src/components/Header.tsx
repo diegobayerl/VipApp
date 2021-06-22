@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
-import { Delete } from '../utils/database';
+
+import AuthContext from '../constexts/auth';
 
 interface headerProps {
     title: string,
@@ -14,12 +15,11 @@ interface headerProps {
 }
 
 export default function Header({ title, showCancell = false, showgobak = false, deslog = false }: headerProps){
-
+    const { SignOut } = useContext(AuthContext);
     const navigation = useNavigation();
 
     async function deslogar(){
-        await Delete('@users');
-        navigation.navigate('Home');
+        SignOut();
     }
 
 

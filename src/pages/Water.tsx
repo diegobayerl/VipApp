@@ -21,32 +21,24 @@ interface product {
 export default function Water() {
     const [water, setWater] = useState<product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [checkVisible, setCheckVisible] = useState(true);
-
+   
     const navigation = useNavigation();
 
     useEffect(()=>{
         api.get('product?type=water').then(response=>[
             setWater(response.data),
         ]);
-
-        setTimeout(() => {
             setLoading(false);
-        }, 1000);
     },[])
 
-    function DetailsNavigation() {
-        navigation.navigate('Details');
-    }
-
-    if(Water.length > 0){
-        setCheckVisible(false);
+    function DetailsNavigation(id: number) {
+        navigation.navigate('Details', {id});
     }
 
     return (
         <View style={styles.container}>
-            <Shimmer visible={loading}>
-            <Check title="água" visible={checkVisible}>
+        <Shimmer visible={loading}>
+            <Check title="água" visible={water.length < 1}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{marginTop: 20}} />
                 {water.map(Water =>{
@@ -55,13 +47,13 @@ export default function Water() {
                                 key={Water.id}
                                 >
                                 <View style={styles.viewScroll}>
-                                <BorderlessButton onPress={DetailsNavigation}>
+                                <BorderlessButton onPress={()=> DetailsNavigation(Water.id)}>
                                 <View style={styles.viewCard}>
 
                                     <View style={styles.ViewTextScroll}>
                                         <Text style={styles.TextTitle}>{Water.name}</Text>
                                         <Text style={styles.TextValue}>{Water.description}</Text>
-                                        <Text style={styles.TextValue}>R$ {Water.value}0 Unid</Text>
+                                        <Text style={styles.TextValue}>R$ {Water.value.toFixed(2)} Unid</Text>
                                     </View>
                                     <Image style={styles.image} source={{ uri: Water.url }} />
 
@@ -117,13 +109,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         color: '#303A52',
 
+        width: 150,
+        marginBottom: 5,
+
         fontSize: 25
     },
     TextValue: {
         fontFamily: 'Nunito_700Bold',
         paddingHorizontal: 10,
         fontSize: 20,
-        color: '#303A52'
+        color: '#303A52',
+        width: 165
     },
     ViewTitle: {
         width: '93%',

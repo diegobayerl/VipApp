@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
 import { BorderlessButton } from "react-native-gesture-handler";
 import api from "../services/api";
@@ -18,46 +18,42 @@ interface productPromo {
 }
 
 export default function Promo() {
+
+  const isFocused = useIsFocused();
+
   const navigation = useNavigation();
   const [promo, setPromo] = useState<productPromo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [checkVisible, setCheckVisible] = useState(true);
 
-  useEffect(() => {
-    api.get("productPromo?promotion=true").then((response) => {
+  useEffect(()=>{
+    api.get('productPromo?promotion=true').then(response =>{
       setPromo(response.data);
     });
-
-    setTimeout(() => {
-        setLoading(false);
-    }, 1000);
-
-  }, []);
-
-  function DetailsNavigation() {
-    navigation.navigate("Details");
-  }
-
-  if(promo.length > 0){
-      setCheckVisible(false);
+    setLoading(false);
+  }, [isFocused]);
+  
+  function DetailsNavigation(id: number){
+    navigation.navigate("Details", {id});
   }
 
   return (
     <View style={styles.container}>
     <Shimmer visible={loading}>
-    <Check title="promoção" visible={checkVisible}>
+      <Check visible={promo.length < 1} title="promoção">
       <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={{ marginTop: 20 }} />
         {promo.map((product) => {
           return (
             <View key={product.id} style={styles.viewScroll}>
-              <BorderlessButton onPress={DetailsNavigation}>
+              <BorderlessButton onPress={() => DetailsNavigation(product.id)}>
                 <View style={styles.viewCard}>
                   <View style={styles.ViewTextScroll}>
                     <Text style={styles.TextTitle}>{product.name}</Text>
                     <Text style={styles.TextValue}>{product.description}</Text>
-                    <Text style={styles.TextValue}>
-                      R$ {product.value}0 Unid
+                    <Text style={[styles.TextValue, {color: '#D13438'}]}>
+                      R$ {product.value.toFixed(2)} Unid
                     </Text>
+                    <Text style={[styles.TextValue, {color: '#D13438'}]}>Em promoção</Text>
                   </View>
                   <Image style={styles.image} source={{ uri: product.url }} />
                 </View>
@@ -89,8 +85,8 @@ const styles = StyleSheet.create({
   image: {
     width: 130,
     height: 130,
-    resizeMode: "cover",
     borderRadius: 20,
+    overflow: 'hidden',
   },
   viewScroll: {
     padding: 15,
@@ -117,14 +113,21 @@ const styles = StyleSheet.create({
   TextTitle: {
     fontFamily: "Nunito_800ExtraBold",
     paddingHorizontal: 10,
-    color: "#323232",
+    color: "#303A52",
     fontSize: 25,
+
+    width: 150,
+    marginBottom: 5
   },
   TextValue: {
     fontFamily: "Nunito_700Bold",
     paddingHorizontal: 10,
     fontSize: 20,
-    color: "#323232",
+    color: "#303A52",
+    width: 165,
+
+    marginTop: 5,
+    marginBottom: 5
   },
   ViewTitle: {
     width: "93%",

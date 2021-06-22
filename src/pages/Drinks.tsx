@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
 import { BorderlessButton } from "react-native-gesture-handler";
+
 import api from "../services/api";
 
 import Shimmer from "../components/shimmer";
@@ -16,7 +17,8 @@ interface product {
   promotion: boolean;
 }
 
-export default function Drinks() {
+export default function Drinks(){
+
   const [status, setStatus] = useState("Cervejas");
   const [cerveja, setCerveja] = useState<product[]>([]);
   const [cervejaEpecial, setCervejaEspecial] = useState<product[]>([]);
@@ -29,9 +31,7 @@ export default function Drinks() {
       setCerveja(response.data);
     });
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -144,7 +144,7 @@ export default function Drinks() {
                               {drink.description}
                             </Text>
                             <Text style={styles.TextValue}>
-                              R$ {drink.value}0 Unid
+                              R$ {drink.value.toFixed(2)} Unid
                             </Text>
                           </View>
                           <Image
@@ -172,7 +172,7 @@ export default function Drinks() {
                               {drink.description}
                             </Text>
                             <Text style={styles.TextValue}>
-                              R$ {drink.value}0 Unid
+                              R$ {drink.value.toFixed(2)} Unid
                             </Text>
                           </View>
                           <Image
@@ -199,7 +199,7 @@ export default function Drinks() {
                               {drink.description}
                             </Text>
                             <Text style={styles.TextValue}>
-                              R$ {drink.value}0 Unid
+                              R$ {drink.value.toFixed(2)} Unid
                             </Text>
                           </View>
                           <Image
@@ -265,6 +265,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     color: "#303A52",
 
+    width: 150,
+    marginBottom: 5,
+
     fontSize: 25,
   },
   TextValue: {
@@ -272,6 +275,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 20,
     color: "#303A52",
+
+    width: 165
   },
 
   ViewMenuSuper: {

@@ -5,10 +5,9 @@ import { useFonts } from 'expo-font';
 
 import { Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold } from '@expo-google-fonts/nunito';
 
-import Router from './src/routes';
-import Footer from './src/components/footer';
+import Index from './src/routes';
 
-export default function App() {
+export default function App(){
 
   const [fontsLoaded] = useFonts({
     Nunito_600SemiBold,
@@ -22,7 +21,7 @@ export default function App() {
 
   return (
     <>
-    <Router />
+    <Index />
     <StatusBar style="light" />
     </>
   );

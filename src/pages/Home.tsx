@@ -1,43 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TextInput } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { Text, View, StyleSheet, TextInput, Modal, TouchableHighlight, Dimensions } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons';
 
 import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
-import api from '../services/api';
 
-import { Get, Post } from '../utils/database';
+import AuthContext from '../constexts/auth';
 
 
 export default function Home(){
 
+    const { SignIn } = useContext(AuthContext);
+
     const [name, setName] = useState('');
     const [cpf, setCpf] = useState(0);
-    const [load, setLoad] = useState(true);
     const navigation = useNavigation();
 
-    useEffect(()=>{
-        async function Storage(){
-            await Get('@users').then(t =>{
-                if(t){
-                    navigation.navigate('MainTab');
-                }
-            });
-        }
-        Storage();
-    }, []);
+    const [visible, setVisible] = useState(false);
 
     async function navigateLogin() {
-        const { data } = await api.get(`user?CPF=${cpf}`);
+      if(name === '' || cpf === 0){
 
-        if(data?.cpf === cpf){
-            await Post('@users', data);
-            navigation.navigate('MainTab');
-        }
-        else{
-            alert("Usuário não cadastrado");
-        }     
+        setVisible(!visible);
+        return;
+      }
+
+      const response =  await SignIn({cpf});
+
+      if(!response){
+        setVisible(!visible);
+      }
+
     }
 
     function navigateLogout() {
@@ -48,12 +42,41 @@ export default function Home(){
 
         <View  style={styles.container}>
 
+        <Modal
+          animationType='slide'
+          transparent
+          visible={visible}
+        >
+            <View style={styles.viewExternaModal}>
+              <View style={styles.containerModal}>
+                <View style={styles.modalView}>
+                  <Text style={styles.textModal}>Ops!</Text>
+                  
+                    <Text style={styles.textModalSub}>
+                      O usuário não foi encontrado! Verifique se preencheu os dados corretamente! ok?
+                    </Text>
+        
+                    <TouchableHighlight onPress={()=> {
+                        setVisible(!visible);
+                        setCpf(0);
+                        }} style={[styles.bottonModal, {backgroundColor: '#D13438'}]}>
+                                <Text  style={[styles.textButton, {color: '#FFF'}]}> Tentar novamente </Text>
+                    </TouchableHighlight>
 
-
-
-            <View style={styles.ViewHeader}>
-                    <Text style={styles.TextHeader}>Olá, bem Vindo</Text>
+                  <TouchableHighlight onPress={() => {
+                      navigateLogout();
+                      setVisible(!visible);
+                      setCpf(0);
+                  }} style={styles.bottonModal}>
+                            <Text  style={styles.textButton}> Criar conta </Text>
+                  </TouchableHighlight>
+                </View>
+              </View>
             </View>
+        </Modal>
+
+           
+            
 
             <View style={styles.viewLogin}>
             <Text style={styles.label}>Nome</Text>
@@ -83,8 +106,10 @@ export default function Home(){
                     <RectButton style={styles.bottonLogout} onPress={navigateLogout}>
                         <Text style={styles.textBottonLogOut}>Não possui uma conta ?</Text>
                     </RectButton>
-            </View>      
+            </View> 
+
             </View>
+
 
             <View style={styles.logo}>
                     <Text style={styles.Text}>VIP</Text>
@@ -98,6 +123,10 @@ export default function Home(){
                     </View>
 
             </View>
+
+            <View style={styles.ViewHeader}>
+                  <AntDesign name="user" size={32} color="#333" />
+            </View>
         
         </View>
     )
@@ -106,20 +135,34 @@ export default function Home(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 15
+        padding: 15,
+        backgroundColor: '#D13438'
     },
+
     ViewHeader: {
-        marginTop: 40,
-        marginLeft: 12
-    },
-    TextHeader: {
-        color: '#303A52',
-        fontSize: 25,
-        fontFamily: 'Nunito_800ExtraBold',
+        marginTop: 5,
+
+        width: 104,
+        height: 96,
+
+        marginLeft: (Dimensions.get('screen').width/2) - 52,
+        backgroundColor: '#FFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderRadius: 50,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 2,
+          height: 2,
+        },
+        shadowRadius: 3.84,
+        elevation: 5,
+        position: 'absolute',
     },
 
     label: {
-        color: '#303A52',
+        color: '#333',
         fontFamily: 'Nunito_700Bold',
         fontSize: 16,
         marginBottom: 8,
@@ -138,11 +181,19 @@ const styles = StyleSheet.create({
     },
 
     viewLogin:{
-        padding: 20,
+        padding: 40,
+        paddingVertical: 80,
         width: '100%',
-        borderRadius: 10,
-
+        borderRadius: 20,
         marginTop: 30,
+        backgroundColor: '#FFF',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 2,
+          height: 2,
+        },
+        shadowRadius: 3.84,
+        elevation: 1,
     },
     bottonLogin: {
         width: 200,
@@ -184,7 +235,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,
-        marginTop: 50,
+        marginTop: 30,
         marginBottom: 60
     },
     Text: {
@@ -195,5 +246,68 @@ const styles = StyleSheet.create({
 
     star:{
         flexDirection: 'row',
-    }
+    },
+
+
+    containerModal: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      viewExternaModal:{
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(136, 136, 136, 0.5)',
+      },
+    modalView: {
+        margin: 20,
+        width: '80%',
+        height: '35%',
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 2,
+          height: 2,
+        },
+        shadowRadius: 3.84,
+        elevation: 1,
+        justifyContent: 'center',
+      },
+      textModal: {
+        fontSize: 24,
+        fontFamily: 'Nunito_700Bold',
+        marginBottom: 10
+      },
+      textModalSub:{
+        fontSize: 16,
+        fontFamily: 'Nunito_600SemiBold',
+        marginBottom: 30,
+        alignItems: 'center',
+        textAlign: 'justify'
+      },
+      textButton:{
+        fontSize: 16,
+        fontFamily: 'Nunito_600SemiBold',
+        color: '#D13438'
+      },
+      bottonModal: {
+        backgroundColor: '#FFF',
+        width: 150,
+        padding: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#D13438',
+        marginBottom: 5
+        
+      },
+      textMesageModal: {
+        fontSize: 18,
+        fontFamily: 'Nunito_700Bold',
+        marginBottom: 30
+      },
 })

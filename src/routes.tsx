@@ -1,68 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+
+import Routes from './routes/index';
 
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 
-const { Navigator, Screen } = createStackNavigator();
+import { AuthProvider } from '../src/constexts/auth';
 
-import Maps from './pages/Maps';
-import Home from './pages/Home';
-import Logout from './pages/Logout';
-import Details from './pages/Details';
-
-import MainTab from './tabNavigation'
-import Header from './components/Header'
-
-export default function Router() {
+export default function Index(){
     return (
         <NavigationContainer>
-                <Navigator screenOptions={{ headerShown: false, cardStyle: { backgroundColor: "#f2f3f5" } }}>
-                <Screen
-                    name="Home"
-                    component={Home}
-                    options={{
-                        headerShown: true,
-                        header: () => <Header showgobak={false} title="VIP" />
-                    }}
-                />
-                <Screen
-                    name="Logout"
-                    component={Logout}
-                    options={{
-                        headerShown: true,
-                        header: () => <Header showCancell={true} showgobak={false} title="Cadastrar" />
-                    }}
-                />
-
-                <Screen
-                    name="MainTab"
-                    component={MainTab}
-                    options={{
-                        headerShown: true,
-                        header: () => <Header title="VIP" deslog={true} />
-                    }}
-                />
-
-
-                <Screen
-                    name="Details"
-                    component={Details}
-                    options={{
-                        headerShown: true,
-                        header: () => <Header showgobak={true} title="VIP" />
-                    }}
-                />
-
-                <Screen
-                    name="Maps"
-                    component={Maps}
-                    options={{
-                        headerShown: true,
-                        header: () => <Header title="VIP" />,
-                    }}
-                />
-
-            </Navigator>
+            <AuthProvider>
+              <Routes /> 
+            </AuthProvider>
         </NavigationContainer>
     );
 }
