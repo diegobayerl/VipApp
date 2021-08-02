@@ -2,17 +2,18 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import {
   View,
-  StyleSheet,
   Text, ScrollView,
   Image,
   TextInput,
   Modal,
   TouchableHighlight,
   ActivityIndicator,
-  TouchableOpacity
+  TouchableOpacity,
+  Linking,
+  Alert
 } from 'react-native';
 
-import AuthContext from '../constexts/auth';
+import AuthContext from '../../constexts/auth';
 
 import { Picker } from '@react-native-picker/picker'
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -21,7 +22,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import api from '../services/api';
+import api from '../../services/api';
+
+import styles from './styles';
 
 interface useRouteParams {
   id: number;
@@ -34,7 +37,7 @@ interface products {
   description: string,
 }
 
-export default function Details() {
+export default function form() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [product, setProduct] = useState<products>();
@@ -71,13 +74,26 @@ export default function Details() {
     })
   },[params.id]);
 
+  if(!!product == false){
+    return (
+      <View  style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#FFF',
+      }}>
+          <ActivityIndicator size='large' color='#D13438' />
+      </View>
+    ) 
+  }
+
   async function createRequest(){
 
     setLoad(true);
 
     await api.post('/request',{
       nameUser: user?.name,
-      cpfUser: user?.cpf,
+      telephone: user?.telephone,
       idUser: user?.id,
       idProduct: params.id,
       nameProduct,
@@ -92,15 +108,25 @@ export default function Details() {
       valorCliente,
       troco,
     })
+    
+    Alert.alert(
+      'Pedido realizado com sucesso',
+      'Muito obrigado(a) pela preferência! ❤️',
+      [
+        {text: 'OK', onPress: ()=> navigateRoute()}
+      ]
+    );
 
     setLoad(false);
-    setModalVisible(!modalVisible);
 
   }
 
-  function navigateModal(){
-    setModalVisible(false);
-    entrega == 'Delivery' ? navigation.goBack() : navigation.navigate('Maps');
+  function navigateRoute(){
+    entrega == 'Delivery' ? 
+      navigation.goBack() : (
+        navigation.goBack(),
+        Linking.openURL('https://www.google.com/maps/dir/?api=1&destination=-18.719617,-39.8528851'
+      ));
   }
 
   function SetSomaQuatidadeItens() {
@@ -121,30 +147,6 @@ export default function Details() {
     <View style={styles.container}>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-
-        <Modal
-          animationType='slide'
-          transparent
-          visible={modalVisible}
-        >
-            <View style={styles.viewExternaModal}>
-              <View style={styles.containerModal}>
-                <View style={styles.modalView}>
-                  <MaterialIcons name="fact-check" size={24} color="#333" />
-                  <Text style={styles.textModal}>Pedido efetuado com sucesso!!</Text>
-                  
-                    <Text style={styles.textModalSub}>
-                      Agradecemos a preferência e te esperamos de volta! ok?
-                    </Text>
-        
-                  <TouchableHighlight onPress={navigateModal} style={styles.bottonModal}>
-                    <Entypo name="check" size={24} color="#FFF" />
-                  </TouchableHighlight>
-                </View>
-              </View>
-            </View>
-        </Modal>
-
         <View style={styles.ImageView}>
           <View style={{
             justifyContent: 'space-between',
@@ -153,7 +155,6 @@ export default function Details() {
             <Text style={styles.TextScroll}>{product?.name}</Text>
             <Text style={styles.TextScroll}>R$ {product?.value.toFixed(2)}</Text>
           </View>
-
           <Image style={styles.image} source={{ uri: product?.url }} />
         </View>
 
@@ -169,10 +170,8 @@ export default function Details() {
         </View>
 
         <View style={styles.EntregaView}>
-          <View style={styles.ViewTextScroll}>
             <Text style={styles.TextScroll}>Valor total:</Text>
             <Text style={styles.TextScrollValue}>R$ {valorTotal.toFixed(2)}</Text>
-          </View>
         </View>
 
         <View style={styles.ViewInput}>
@@ -190,7 +189,7 @@ export default function Details() {
         </View>
 
 
-        <View style={formaPag == 'Dinheiro' ? [styles.ViewInput, {borderBottomRightRadius: 20, borderBottomLeftRadius: 20}] : styles.ViewInput}>
+        <View style={formaPag == 'Dinheiro' ? [styles.ViewInput, {borderBottomRightRadius: 8, borderBottomLeftRadius: 8}] : styles.ViewInput}>
           <Text style={styles.label}>Forma de pagamento</Text>
 
           <Picker
@@ -211,14 +210,14 @@ export default function Details() {
             <TextInput
               keyboardType="numeric"
               style={styles.input}
-              placeholder='Ex: 100'
+              placeholder='digite o valor....'
               onChangeText={text => setValueClient(Number(text))}
             />
             <Text style={[styles.label, { color: '#333'}]}>Troco:  R$ {troco.toFixed(2)} </Text>
           </View>
 
         ) : (
-            <View style={[styles.ViewInput, {borderBottomRightRadius: 20, borderBottomLeftRadius: 20}]}>
+            <View style={[styles.ViewInput, {borderBottomRightRadius: 1, borderBottomLeftRadius: 1}]}>
               <Text style={styles.label}>Qual baneira ?</Text>
 
               <Picker
@@ -246,7 +245,7 @@ export default function Details() {
         <View style={styles.ViewBotton}>
             <TouchableOpacity disabled={load} onPress={createRequest} style={!load ? styles.botton : [styles.botton, {backgroundColor: '#AE696A'}] }>
               {!load ? (
-                 <Text style={styles.textBotton}>Comprar</Text>
+                 <Text style={styles.textBotton}>Finalizar pedido</Text>
               ): (
                 <ActivityIndicator size='small' color='#FFF' />
               )}
@@ -256,202 +255,3 @@ export default function Details() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: 'Nunito_700Bold',
-    borderBottomColor: '#8fa7b3',
-    marginTop: 10,
-    marginBottom: 10,
-    color: '#333'
-  },
-  image: {
-    width: 150,
-    height: 150,
-    resizeMode: 'cover',
-    borderRadius: 20,
-  },
-  viewOptionsCartDin: {
-    paddingHorizontal: 20,
-    paddingTop: 20
-  },
-
-  ViewTextScroll: {
-    padding: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    color: '#333',
-
-  },
-  TextScroll: {
-    fontFamily: 'Nunito_700Bold',
-    fontSize: 18,
-    marginLeft: 10,
-    color: '#333',
-  },
-  label: {
-    fontFamily: 'Nunito_700Bold',
-    marginBottom: 8,
-    fontSize: 18,
-    color: '#333',
-  },
-
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1.4,
-    borderColor: '#3333',
-    borderRadius: 15,
-    height: 56,
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-    textAlignVertical: 'top',
-    marginBottom: 20,
-    color: '#333',
-  },
-  botton: {
-    width: 290,
-    height: 55,
-    backgroundColor: '#D13438',
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#D13438',
-    borderWidth: 2,
-    elevation: 1,
-    marginTop: 20
-  },
-
-  ViewInput: {
-    padding: 20,
-    backgroundColor: '#fff',
-    marginHorizontal: 10,
-    elevation: 1,
-    borderLeftWidth: 1.2,
-    borderRightWidth: 1.2,
-    borderColor: '#3333',
-  },
-  ImageView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginRight: 10,
-    marginLeft: 10,
-    marginTop: 20,
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    padding: 10,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
-    elevation: 1,
-    borderWidth: 1.2,
-    borderBottomWidth: 0,
-    borderColor: '#3333',
-
-  },
-  ViewBotton: {
-    padding: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 30
-  },
-  textBotton: {
-    color: "#FFF",
-    fontFamily: 'Nunito_700Bold',
-    fontSize: 20
-  },
-  viewQtd: {
-    padding: 20,
-    paddingHorizontal: 40,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    marginHorizontal: 10,
-    elevation: 1,
-    borderLeftWidth: 1.2,
-    borderRightWidth: 1.2,
-    borderColor: '#3333',
-  },
-  inputQuantidade: {
-    backgroundColor: '#fff',
-    borderWidth: 1.4,
-    borderColor: '#3333',
-    borderRadius: 20,
-    height: 56,
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    elevation: 1,
-  },
-  TextScrollValue: {
-    fontFamily: 'Nunito_600SemiBold',
-    fontSize: 18,
-    marginRight: 20,
-    color: '#333'
-  },
-  containerModal: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  viewExternaModal:{
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(136, 136, 136, 0.5)',
-    marginTop: 66
-    
-  },
-  modalView: {
-    margin: 20,
-    width: '80%',
-    height: '35%',
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowRadius: 3.84,
-    elevation: 1,
-    justifyContent: 'center',
-  },
-  textModal: {
-    fontSize: 23,
-    fontFamily: 'Nunito_700Bold',
-    marginBottom: 30
-  },
-  textModalSub:{
-    fontSize: 18,
-    fontFamily: 'Nunito_600SemiBold',
-    marginBottom: 30,
-  },
-  bottonModal: {
-    backgroundColor: '#2BD65B',
-    width: 80,
-    padding: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  textMesageModal: {
-    fontSize: 18,
-    fontFamily: 'Nunito_700Bold',
-    marginBottom: 30
-  },
-  EntregaView: { 
-    backgroundColor: '#fff', 
-    marginHorizontal: 10,
-    elevation: 1,
-    borderLeftWidth: 1.2,
-    borderRightWidth: 1.2,
-    borderColor: '#3333',
-  }
-})

@@ -1,21 +1,26 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigation, useIsFocused } from "@react-navigation/native";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
+import { View, Text, ScrollView, Linking } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import api from "../services/api";
 
-import AuthContext from '../constexts/auth';
+import api from "../../services/api";
 
-import Shimmer from '../components/shimmerOption';
+import AuthContext from '../../constexts/auth';
+
+import Shimmer from '../../components/ShimmerRequest';
+
+import styles from './styles';
+import Check from "../../components/Check";
 
 interface requests {
   id: number;
   nameUser: string;
-  cpfUser: number;
+  telephone: number;
   idUser: number;
   nameProduct: string;
+  description: string;
   value: number;
   quantidade: number;
   entrega: string;
@@ -38,7 +43,6 @@ export default function Request() {
 
   const [requests, setRequests] = useState<requests[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
 
   useEffect(() => {
     api.get(`requests/${user?.id}`).then((response) => {
@@ -48,17 +52,18 @@ export default function Request() {
   }, [isFocused]);
 
   function NavigateMaps() {
-    navigation.navigate("Maps");
+    Linking.openURL('https://www.google.com/maps/dir/?api=1&destination=-18.719617,-39.8528851');
   }
-  // decelerationRate="fast"
+
   return (
     <View style={styles.container}>
       <Shimmer visible={loading}>
+      <Check visible={requests.length < 1}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={[
             {
-              marginTop: 20,
+              marginTop: 8,
             },
           ]}
         />
@@ -68,12 +73,17 @@ export default function Request() {
             <View key={request.id} style={styles.viewText}>
               <View style={styles.viewName}>
                 <Text style={styles.textName}>{request.nameUser}</Text>
-                <Text style={styles.textName}>{request.cpfUser}</Text>
+                <Text style={styles.textName}>{request.telephone}</Text>
               </View>
 
               <View style={styles.viewTitleItens}>
                 <Text style={styles.textItensTitle}>Produto:</Text>
                 <Text style={styles.textItens}>{request.nameProduct}</Text>
+              </View>
+
+              <View style={styles.viewTitleItens}>
+                <Text style={styles.textItensTitle}>Descrição:</Text>
+                <Text style={styles.textItens}>{request.description}</Text>
               </View>
 
               <View style={styles.viewTitleItens}>
@@ -167,77 +177,8 @@ export default function Request() {
           );
         })}
       </ScrollView>
+      </Check>
       </Shimmer>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 15,
-    backgroundColor: "#D8D6D6",
-  },
-
-  viewText: {
-    backgroundColor: "#FFF",
-    width: "100%",
-    padding: 20,
-    borderRadius: 20,
-    elevation: 2,
-    marginBottom: 20,
-  },
-  viewName: {
-    marginHorizontal: 5,
-    backgroundColor: "#696878",
-    borderRadius: 10,
-    padding: 5,
-  },
-  textName: {
-    fontSize: 16,
-    fontFamily: "Nunito_800ExtraBold",
-    marginLeft: 5,
-    color: "#FFF",
-  },
-
-  textItens: {
-    fontSize: 14,
-    fontFamily: "Nunito_600SemiBold",
-    marginLeft: 20,
-    marginTop: 10,
-    color: "#333",
-  },
-  viewStatus: {
-    width: 80,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginTop: 5,
-    marginLeft: 10,
-  },
-  textStatuseItens: {
-    fontFamily: "Nunito_800ExtraBold",
-    color: "#FFF",
-    fontSize: 15,
-    padding: 5,
-  },
-
-  viewTitleItens: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginRight: 5,
-  },
-
-  textItensTitle: {
-    fontSize: 15,
-    fontFamily: "Nunito_800ExtraBold",
-    marginLeft: 5,
-    marginTop: 10,
-    color: "#333",
-  },
-  BottonNavigate: {
-    alignItems: "center",
-    marginTop: 5,
-    marginBottom: 5,
-  },
-});

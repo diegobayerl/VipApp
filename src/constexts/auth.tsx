@@ -5,11 +5,11 @@ import { Post, Get, Delete } from '../utils/database';
 
 
 interface signIn {
-    cpf: number;
+    telephone: string;
 }
 
 interface provider {
-    children: {};
+    children: object;
 }
 
 interface Auth {
@@ -17,10 +17,10 @@ interface Auth {
     user: { 
         id?: number;
         name?: string;
-        cpf?: number;
+        telephone?: string;
     } | null;
     load: boolean;
-    SignIn({cpf}: signIn): Promise<boolean>;
+    SignIn({telephone}: signIn): Promise<boolean>;
     SignOut(): void;
 }
 
@@ -46,10 +46,10 @@ export function AuthProvider({ children }: provider){
 
     }, []);
 
-    async function SignIn({cpf}: signIn){
-        const { data } = await api.get(`user?CPF=${cpf}`);
+    async function SignIn({telephone}: signIn){
+        const { data } = await api.get(`user?telephone=${telephone}`);
 
-        if(data.cpf === cpf){
+        if(data.telephone === telephone){
             setUser(data);
             await Post('@VIP:user', data);
 
