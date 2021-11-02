@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 24,
-        backgroundColor: '#D13438'
+        backgroundColor: '#03A63C'
     },
 
     ViewHeader: {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     },
     
     input: {
-        backgroundColor: '#fff',
+        backgroundColor: '#f3f3f3',
         borderWidth: 1.4,
         borderColor: '#3333',
         borderRadius: 1,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         paddingVertical: 48,
         width: '100%',
         marginTop: 30,
-        backgroundColor: '#FFF',
+        backgroundColor: '#F3F3F3',
         shadowColor: '#000',
         shadowOffset: {
           width: 2,
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     textBotton: {
-        color: '#FFF',
+        color: '#F3F3F3',
         fontFamily: 'Nunito_600SemiBold',
         fontSize: 18,
     },

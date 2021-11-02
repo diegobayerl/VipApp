@@ -82,7 +82,7 @@ export default function form() {
           alignItems: 'center',
           backgroundColor: '#FFF',
       }}>
-          <ActivityIndicator size='large' color='#D13438' />
+          <ActivityIndicator size='large' color='#204040'/>
       </View>
     ) 
   }
@@ -167,6 +167,11 @@ export default function form() {
             onChangeText={text => setQuantidade(Number(text))}
           />
           <AntDesign onPress={SetSomaQuatidadeItens} name="plus" size={32} color="#2BD65B" />
+        </View>
+
+        <View style={styles.EntregaView}>
+            <Text style={[styles.TextScroll, { marginBottom: 8}]}>Entrega:</Text>
+            <Text style={styles.TextScrollValue}>R$ {valorEntrega.toFixed(2)}</Text>
         </View>
 
         <View style={styles.EntregaView}>

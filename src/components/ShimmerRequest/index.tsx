@@ -13,7 +13,7 @@ export default function shimmer({ visible = false, children }: valueShimer) {
   if (visible) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size='large' color='#D13438' />
+        <ActivityIndicator size='large' color='#204040' />
       </View>
     );
   }

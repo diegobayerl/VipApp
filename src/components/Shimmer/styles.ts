@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
       width: 130,
       height: 130,
       resizeMode: "cover",
-      borderRadius: 20,
       backgroundColor: "#ECEFF1",
       overflow: 'hidden',
     },
@@ -18,9 +17,9 @@ const styles = StyleSheet.create({
       margin: 15,
       marginBottom: 10,
       marginTop: 0,
-      borderRadius: 15,
+      borderRadius: 1,
       overflow: 'hidden',
-      opacity: 0.8
+      opacity: 0.5
     },
   
     viewCard: {
@@ -39,8 +38,6 @@ const styles = StyleSheet.create({
       height: 30,
       width: 130,
       overflow: 'hidden',
-
-      borderRadius: 2
     },
   });
 

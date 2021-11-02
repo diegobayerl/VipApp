@@ -3,8 +3,6 @@ import { useNavigation } from "@react-navigation/native";
 import { View, Text, ScrollView, Image } from "react-native";
 import { BorderlessButton } from "react-native-gesture-handler";
 
-import api from "../../services/api";
-
 import styles from "./styles";
 
 import Shimmer from '../Shimmer';
@@ -21,23 +19,29 @@ interface Product {
 }
 
 interface TypeProduct {
-    route: string;
+    data: Array<{
+      id: number;
+      name: string;
+      type: string;
+      value: number;
+      url: string;
+      description: string;
+      promotion: boolean;
+    }>;
 }
 
-export default function ListPruducts({ route }: TypeProduct) {
+export default function ListPruducts({ data }: TypeProduct) {
 
   const [products, setProducts] = useState<Product[]>([]);
-
   const [loading, setLoading] = useState(true);
 
-  const navigation = useNavigation();
-
   useEffect(() => {
-    api.get(`${route}`).then((response) => {
-      setProducts(response.data);
-      setLoading(false);
-    });
-  }, []);
+    setProducts(data);
+    setLoading(false);
+    return;
+  }, [data]);
+
+  const navigation = useNavigation();
 
   function DetailsNavigation(id: number) {
     navigation.navigate("Details", { id });
@@ -45,7 +49,7 @@ export default function ListPruducts({ route }: TypeProduct) {
 
   return (
     <View style={styles.container}>
-    <Shimmer visible={loading}>
+      <Shimmer visible={loading}>
       <Check visible={products.length < 1}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{marginTop: 8}} />

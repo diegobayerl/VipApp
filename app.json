@@ -21,9 +21,6 @@
     },
     "android": {
       "package": "com.vipdistribuidora.vip",
-      "config": {
-        "googleMaps": { "apiKey": "AIzaSyAA3OwhwESijV9U-DcUjKRqWsu6sarZ6EQ" }   
-      },
     "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#D13438"

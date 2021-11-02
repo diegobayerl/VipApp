@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     },
   
     viewText: {
-      backgroundColor: "#FFF",
+      backgroundColor: "#F3F3F3",
       width: "100%",
       padding: 20,
       borderRadius: 1,
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontFamily: "Nunito_800ExtraBold",
       marginLeft: 5,
-      color: "#FFF",
+      color: "#F3F3F3",
     },
   
     textItens: {
@@ -39,13 +39,13 @@ const styles = StyleSheet.create({
       width: 80,
       justifyContent: "center",
       alignItems: "center",
-      borderRadius: 10,
+      borderRadius: 4,
       marginTop: 5,
       marginLeft: 10,
     },
     textStatuseItens: {
       fontFamily: "Nunito_800ExtraBold",
-      color: "#FFF",
+      color: "#F3F3F3",
       fontSize: 15,
       padding: 5,
     },

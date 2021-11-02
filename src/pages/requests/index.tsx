@@ -144,7 +144,6 @@ export default function Request() {
                 <Text style={styles.textItens}>{request.hora}</Text>
               </View>
 
-
               <Text style={styles.textItens}>Status:</Text>
 
               <View style={

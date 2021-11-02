@@ -3,9 +3,9 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     container: {
         padding: 24,
-        backgroundColor: "#D13438",
+        backgroundColor: "#03A63C",
         borderBottomWidth: 1,
-        borderColor: "#D13438",
+        borderColor: "#03A63C",
         paddingTop: 44,
    
         flexDirection: 'row',
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontFamily: 'Nunito_800ExtraBold',
-        color: "#FFF",
+        color: "#F3F3F3",
         fontSize: 20
     }
 });

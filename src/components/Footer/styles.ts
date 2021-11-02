@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
         height: 60,
         marginRight:0,
         flexDirection: 'row',
-        backgroundColor: '#D13438',
+        backgroundColor: '#03A63C',
         justifyContent: 'space-around',
         alignItems: 'center',
         paddingHorizontal: 20,
@@ -26,21 +26,21 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     iconTrue:{
-        color: '#333',
+        color: '#204040',
         fontSize: 18
     },
     iconFalse:{
-        color: '#FFF',
+        color: '#F3F3F3',
         fontSize: 16
     },
     textTrue:{
         fontFamily: 'Nunito_700Bold',
-        color: '#333',
+        color: '#204040',
         fontSize: 12,
     },
     textFalse:{
         fontFamily: 'Nunito_700Bold',
-        color: '#FFF',
+        color: '#F3F3F3',
         fontSize: 12,
     }
 });

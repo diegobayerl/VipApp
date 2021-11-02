@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     view__title:{
       width: '100%',
       padding: 8,
-      backgroundColor: '#D13438'
+      backgroundColor: '#03A63C'
     },
     title:{
       fontSize: 18,
